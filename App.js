@@ -45,14 +45,14 @@ export default function App() {
     const numberOfPeople = parseInt(people, 10);
 
     numberOfPeople >= 1 ? setResult(value/numberOfPeople) : setResult(value);
-  }, [value, people]);
+  });
 
   const updateMessage = useCallback(() => {
     const integerPart = Math.floor(result);
     const decimalPart = (result % 1).toFixed(2) * 100;
     
     setMessage(`Dá ${integerPart} reais e ${decimalPart} centavos para cada pessoa`);
-  }, [value, people]);
+  });
 
   useEffect(() => {
     updateResult();
@@ -94,7 +94,7 @@ export default function App() {
         fontSize: 40,
         color: '#003458',
       }}>
-        R$ {result.toFixed(2)}
+        R$ {!!result ? result.toFixed(2) : ''}
       </Text>
       <View style={styles.inputContainer}>
         <TouchableOpacity
