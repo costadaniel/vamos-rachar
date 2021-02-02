@@ -31,7 +31,6 @@ export default function App() {
   }
 
   const handleShare = async () => {
-    console.log(message)
     try {
       const response = await Share.share({
         message: message
