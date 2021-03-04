@@ -1,6 +1,6 @@
 import * as Speech from "expo-speech";
 
-export default ({ message, language }) => {
+export default (message, language) => {
   Speech.speak(message, {
     language,
     pitch: 2.0,
