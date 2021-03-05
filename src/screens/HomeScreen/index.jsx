@@ -5,11 +5,20 @@ import { Feather } from "@expo/vector-icons";
 import IconInput from "../../components/IconInput";
 import IconButton from "../../components/IconButton";
 import useShare from "../../hooks/useShare";
+import useSpeech from "../../hooks/useSpeech";
+import * as ScreenOrientation from "expo-screen-orientation";
+import { SafeAreaView } from "react-native";
+import i18n from "i18n-js";
+
+import Constants from "expo-constants";
+
+const ScrollabeContent = styled.ScrollView``;
 
 const Container = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
+  padding-top: ${Constants.statusBarHeight}px;
 `;
 
 const AppTitle = styled.Text`
@@ -42,6 +51,11 @@ const ButtonsContainer = styled.View`
   width: 250px;
 `;
 
+const ResultText = styled.Text`
+  font-size: 32px;
+  margin-bottom: 20px;
+`;
+
 const ShareButton = styled(IconButton).attrs({
   iconName: "share-2",
 })``;
@@ -57,26 +71,60 @@ const SettingsButton = styled(IconButton).attrs({
 const HomeScreen = () => {
   const [money, setMoney] = React.useState("");
   const [people, setPeople] = React.useState("");
+  const [result, setResult] = React.useState("");
+  const [message, setMessage] = React.useState("");
+  const language = i18n.currentLocale();
+
+  const updateResult = React.useCallback(() => {
+    const totalValue = parseFloat(money);
+    const numberOfPeople = parseInt(people, 10);
+
+    numberOfPeople >= 1 && totalValue >= 0
+      ? setResult((totalValue / numberOfPeople).toFixed(2).toString())
+      : setResult(money);
+  });
+
+  const updateMessage = React.useCallback(() => {
+    const integerPart = Math.floor(result);
+    const decimalPart = (result % 1).toFixed(2) * 100;
+
+    setMessage(
+      i18n.t("HomeScreen.message", { dollars: integerPart, cents: decimalPart })
+    );
+  });
+
+  React.useEffect(() => {
+    updateResult();
+    updateMessage();
+  });
+
+  React.useEffect(() => {
+    ScreenOrientation.unlockAsync();
+  }, []);
 
   return (
-    <Container>
+    <SafeAreaView>
       <StatusBar style="auto" />
-      <AppTitle>Vamos Rachar...</AppTitle>
-      <AppSub>a conta</AppSub>
-      <Feather
-        name="dollar-sign"
-        size={150}
-        color="black"
-        style={{ marginBottom: 20 }}
-      />
-      <MoneyInput value={money} onChangeText={setMoney} />
-      <PeopleInput value={people} onChangeText={setPeople} />
-      <ButtonsContainer>
-        <ShareButton onPress={() => console.log("Test")} />
-        <SpeakButton />
-        <SettingsButton />
-      </ButtonsContainer>
-    </Container>
+      <ScrollabeContent>
+        <Container>
+          <AppTitle>{i18n.t("HomeScreen.title")}</AppTitle>
+          <AppSub>{i18n.t("HomeScreen.subtitle")}</AppSub>
+          <Feather
+            name="dollar-sign"
+            size={150}
+            color="black"
+            style={{ marginBottom: 20 }}
+          />
+          <MoneyInput value={money} onChangeText={setMoney} />
+          <PeopleInput value={people} onChangeText={setPeople} />
+          <ResultText>{result}</ResultText>
+          <ButtonsContainer>
+            <ShareButton onPress={() => useShare(message)} />
+            <SpeakButton onPress={() => useSpeech(message, language)} />
+          </ButtonsContainer>
+        </Container>
+      </ScrollabeContent>
+    </SafeAreaView>
   );
 };
 

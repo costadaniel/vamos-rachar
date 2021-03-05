@@ -10,9 +10,9 @@ const Container = styled.TouchableOpacity`
   background-color: black;
 `;
 
-const IconButton = ({ iconName }) => {
+const IconButton = ({ iconName, onPress }) => {
   return (
-    <Container>
+    <Container onPress={onPress}>
       <Feather name={iconName} size={50} color="white" />
     </Container>
   );
